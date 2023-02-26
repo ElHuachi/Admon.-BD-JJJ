@@ -1,0 +1,51 @@
+1. Creamos la maquina virtual en Azure con autenticación ssh
+2. Descargamos el archivo .pem
+3. nos conectamos a la MV por medio del CLI de Azure o CMD o PowerShell en Windows con el siguiente comando:
+	ssh "usuario"@"ip publica"
+4. Instalaremos mysql en linux server
+	4.1 Comandos a necesitar para instalación:
+		sudo apt-get update
+		sudo apt install mysql-server
+	4.2 Comandos a necesitar para la configuración de conexion remota:
+		sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+		4.2.1 Se edita el archivo comentando la linea de bind-address
+		4.2.2 Se resetea el servicio de mysql con 
+		sudo services mysql restart
+5. Se asignan los puertos en Azure, vamos a la sección de configuración, en la opcion Redes
+	5.1 Agregamos una regla de puerto de entrada con el puerto 3306
+	5.2 Agregamos una regla de puerto de salida con el puerto 3306
+6. Se crean los usuarios en MySQL Linux Server
+	6.1 Entramos a mysql con:
+		sudo mysql -u root
+	6.2 Creamos usuario global:
+		CREATE USER 'newuser'@'%' IDENTIFIED BY 'password';
+		NOTA: El signo % significa que cualquier IP se puede conectar a nuestro SBD con el usuario y contraseña establecidos.
+	6.3 Daremos permisos al nuevo usuario:
+		GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'%';
+	6.4 Se actualizan los privilegios:
+		FLUSH PRIVILEGES;
+7. Se crea la conexión de MySQL workbench:
+	7.1 En workbench crearemos una nueva conexión por metodo TCP/IP
+	7.2 En hostname pondremos la dirección IP Publica de Azure
+	7.3 En Port se dejara el puerto 3306
+	7.4 En Username pondremos el usuario que se creo con el cual haremos la conexión
+	7.5 Daremos en TestConection para verificar que la conexión sea exitosa
+8. Creamos una BD con sus tablas en el host de Windows
+	Script para la BD:
+		create database PruebaL;
+		use PruebaL;
+		create table PruebaT(
+		Nombre varchar(50),
+		apellido varchar(50),
+		clave int auto_increment primary key
+		);
+
+		insert into PruebaT values ('Juan Jose', 'Arreola', default);
+
+		select * from PruebaT;
+9. Comprobamos los cambios de la BD en linux
+	9.1 Comprobamos la base de datos creada:
+		show databases;
+		use "BD Creada";
+		select * from "TablaDeLaBD";
+10. *Continuamos con la parte 2 de la practica*.
